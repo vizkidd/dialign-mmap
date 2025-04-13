@@ -554,10 +554,10 @@ fasta_value *get_seq_mmapped_fasta(mmapped_file *mapped_fasta, int *seqnum, size
           size_t line_len = strlen(line);
           sequence = (char *)calloc(1, (sequence_len + line_len + 2) * sizeof(char));
           // printf("DEBUG line: %s \n", line); // DEBUG
-          // // strcat(sequence, " ");
+          strcat(sequence, " ");
           // // strcpy(sequence, "");
-          // strcpy(sequence + sequence_len + 1, line);
-          strcpy(sequence + sequence_len, line);
+          strcpy(sequence + sequence_len + 1, line);
+          // strcpy(sequence + sequence_len, line);
           sequence_len += line_len;
         }
         else
@@ -586,6 +586,7 @@ fasta_value *get_seq_mmapped_fasta(mmapped_file *mapped_fasta, int *seqnum, size
   if (sequence != NULL)
   // if (sequence != " ")
   {
+    // strcat(sequence, " ");
     sequence[sequence_len + 1] = '\0';
     // sequence = &(sequence[1]);
   }

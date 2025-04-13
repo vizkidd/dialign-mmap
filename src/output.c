@@ -1008,7 +1008,10 @@ void ali_arrange_mmap(int fragno, struct multi_frag *d, FILE *fp, FILE *fp2, FIL
   endlen = 0;
 
   for (hv = 0; hv < seqnum; hv++)
+  {
     maxi(&endlen, shift[hv][end[hv] - 1] + 1);
+    printf("shift[hv][end[hv] - 1]:%d endlen: %d\n", shift[hv][end[hv] - 1] + 1, endlen); // DEBUG
+  }
 
   if ((inv_shift = (int **)malloc(seqnum * sizeof(int *))) == NULL)
   {
