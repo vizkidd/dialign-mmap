@@ -492,6 +492,11 @@ struct multi_frag *get_anchor_by_num(mmapped_file *mapped_fasta, mmapped_file *m
       line_len = 0;
       anc_idx++;
       // printf("prev_offset:%d mapped_anc[%d + 1]:%c anc_idx:%d anc_num:%d\n", prev_offset, offset, mapped_anc[offset + 1], anc_idx, *anc_num); // DEBUG
+      // printf("anc_idx:%d anc_num:%d\n", anc_idx, *anc_num); // DEBUG
+    }
+    if (anc_idx == *anc_num - 1)
+    {
+      break;
     }
     if (anc_idx > *anc_num - 1)
     {
@@ -518,18 +523,18 @@ struct multi_frag *get_anchor_by_num(mmapped_file *mapped_fasta, mmapped_file *m
   char *line_map = &(mapped_anc->mapped_file[offset]);
   int anchor_len = strcspn(line_map, "\n");
   char *line = strndup(line_map, anchor_len);
-  // printf(" DEBUG anc_idx:%d anc_num:%d\n"); // DEBUG
+  printf(" DEBUG anc_idx:%d anc_num:%d offset:%d\n", anc_idx, *anc_num, offset); // DEBUG
   // Only allocate `line_copy` if needed
 
   if (anc_idx == *anc_num - 1) //|| *anc_num == 0
   {
     char *line_copy = strdup(line);
-    // printf(" line:%s\n", line); // DEBUG
+    printf(" line_copy:%s\n", line_copy); // DEBUG
 
     int line_word_count = word_count(line_copy);
     if (line_word_count == 6)
     {
-      sscanf(line, "%d %d %d %d %d %g", &seq1, &seq2, &beg1, &beg2, &len, &wgt);
+      sscanf(line, "%d %d %d %d %d %lf", &seq1, &seq2, &beg1, &beg2, &len, &wgt);
 
       fasta_offset = anchor_check(seq1, seq2, beg1, beg2, len, wgt, fasta_offset, mapped_fasta);
       // seq1--;
@@ -541,6 +546,7 @@ struct multi_frag *get_anchor_by_num(mmapped_file *mapped_fasta, mmapped_file *m
       current_frg->b[1] = beg2;
       current_frg->ext = len;
       current_frg->weight = wgt;
+      printf("GABN - file:%s len:%d wgt:%f\n", mapped_anc->file_name, len, current_frg->weight); // DEBUG
       current_frg->line_offset = offset;
       // current_frg->anc_num = anc_num;
       current_frg->line_num = anc_idx + 1;
@@ -561,9 +567,9 @@ struct multi_frag *get_anchor_by_num(mmapped_file *mapped_fasta, mmapped_file *m
         // current_frg->next = get_anchor_by_num(mapped_anc, &next_idx, current_frg->line_offset, 0);
         current_frg->next = get_anchor_seqs(mapped_fasta, mapped_anc, &seq1, &seq2, current_frg->fasta_offset, 0); // seq1 and seq2 are 1 indexed so no need to add them
       }
-      printf("anc_idx: %d anc_num:%d offset:%d wgt:%f total_anc_num:%d \n", anc_idx, *anc_num, offset, current_frg->weight, total_anc_num); // DEBUG
-      // printf("%d %d %d %d %d %f\n", seq1, seq2, beg1, beg2, len, wgt);                                                                          // DEBUG
-      // printf(" line:%s\n", line); // DEBUG
+      printf("GABN - anc_idx: %d anc_num:%d offset:%d wgt:%f total_anc_num:%d \n", anc_idx, *anc_num, offset, current_frg->weight, total_anc_num); // DEBUG
+      printf("%d %d %d %d %d %f\n", seq1, seq2, beg1, beg2, len, wgt);                                                                             // DEBUG
+      printf(" line:%s\n", line);                                                                                                                  // DEBUG
 
       // free(line);
       // free(line_copy);
@@ -1056,7 +1062,7 @@ int multi_anc_read_mmap(char *file_name)
 
     if (line_word_count == 6)
     {
-      sscanf(line, "%d %d %d %d %d %g ", &seq1, &seq2, &beg1, &beg2, &len, &wgt);
+      sscanf(line, "%d %d %d %d %d %lf", &seq1, &seq2, &beg1, &beg2, &len, &wgt);
 
       fasta_offset = anchor_check(seq1, seq2, beg1, beg2, len, wgt, fasta_offset, mmapped_fasta);
 

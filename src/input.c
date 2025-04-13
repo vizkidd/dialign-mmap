@@ -553,9 +553,11 @@ fasta_value *get_seq_mmapped_fasta(mmapped_file *mapped_fasta, int *seqnum, size
         {
           size_t line_len = strlen(line);
           sequence = (char *)calloc(1, (sequence_len + line_len + 2) * sizeof(char));
-          strcat(sequence, " ");
-          // strcpy(sequence, "");
-          strcpy(sequence + sequence_len + 1, line);
+          // printf("DEBUG line: %s \n", line); // DEBUG
+          // // strcat(sequence, " ");
+          // // strcpy(sequence, "");
+          // strcpy(sequence + sequence_len + 1, line);
+          strcpy(sequence + sequence_len, line);
           sequence_len += line_len;
         }
         else
@@ -1963,7 +1965,7 @@ int set_double_in_line(char *line, size_t start_offset, int *element_index, doub
   char buffer[val_precision];
   // snprintf(new_value_str, sizeof(new_value_str), "%.6f", *new_value); // Adjust precision as needed
   char *new_value_str = NULL; // dtoa(&buffer, *new_value, val_precision, get_precision_level(*new_value));
-  new_value_str = (char *)calloc(1, val_precision * sizeof(char));
+  new_value_str = (char *)calloc((val_precision + 1) * sizeof(double), sizeof(char));
   sprintf(new_value_str, "%g", *new_value);
   // Calculate the length of the new and old values
   // size_t old_length = end_position - current_position;
@@ -2019,8 +2021,12 @@ ow_value set_ow_mmapped(mmapped_file *mapped_file, int *x, int *y, int *z, doubl
   char *value_char = NULL;
   int append_mode = FALSE;
   // value_char = dtoa(&buffer, *value, get_double_precision(*value) + 1, get_precision_level(*value));
-  value_char = (char *)calloc((get_double_precision(*value) + 1), sizeof(char));
-  sprintf(value_char, "%g", *value);
+  value_char = (char *)calloc((get_double_precision(*value) + 1) * sizeof(double), sizeof(char));
+
+  // printf("DEBUG *x:%d *y:%d value:%g value_char:%s sizeof(value_char):%d\n", *x, *y, *value, value_char, sizeof(value_char)); // DEBUG
+  // sprintf(value_char, "%lf", *value);
+  snprintf(value_char, sizeof(value_char), "%g", *value);
+  // printf("DEBUG value_char:%s sizeof(value_char):%d\n", value_char); // DEBUG
   int len_value_char = strlen(value_char);
   // printf(" get_double_precision(*value): %d\n", get_double_precision(*value)); // DEBUG
   // printf(" get_precision_level(*value): %f\n", get_precision_level(*value));   // DEBUG
@@ -2415,7 +2421,7 @@ diag_value set_diags_mmapped(mmapped_file *mapped_file, int *w, int *x, int *y, 
   char *value_char = NULL;
   int append_mode = FALSE;
   // value_char = dtoa(&buffer, *value, get_double_precision(*value) + 1, get_precision_level(*value));
-  value_char = (char *)calloc((get_double_precision(*value) + 1), sizeof(char));
+  value_char = (char *)calloc((get_double_precision(*value) + 1) * sizeof(double), sizeof(char));
   sprintf(value_char, "%g", *value);
   int len_value_char = strlen(value_char);
   // printf(" get_double_precision(*value): %d\n", get_double_precision(*value)); // DEBUG

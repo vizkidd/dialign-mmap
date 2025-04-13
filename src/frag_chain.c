@@ -130,7 +130,7 @@ frag_chain_value *frag_chain_mmap(int n1, int n2, FILE *fp1, FILE *fp_m, int *nu
 
   fasta_value *seqname_n2_val = get_seqname_mmapped_fasta(mapped_fasta, &n2, input_offset);
   int seqname_n2_len = strlen(seqname_n2_val->data);
-  char seqname_n2[seqname_n2_len];
+  char seqname_n2[seqname_n2_len + 1];
   // seqname_n2_val->data++;
   strcpy(seqname_n2, seqname_n2_val->data);
 
@@ -138,7 +138,7 @@ frag_chain_value *frag_chain_mmap(int n1, int n2, FILE *fp1, FILE *fp_m, int *nu
   fasta_len_value *seqlen_n2_val = get_seqlen_mmapped_fasta(mapped_fasta, &n2, input_offset);
   int seqlen_n2 = seqlen_n2_val->len;
   fasta_value *seq2_val = get_seq_mmapped_fasta(mapped_fasta, &n2, input_offset);
-  char seq_n2[seqlen_n2];
+  char seq_n2[seqlen_n2 + 2];
   // seq2_val->data++;
   strcpy(seq_n2, seq2_val->data);
   // *seq_n2 = seq_n2[1];

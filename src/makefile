@@ -30,6 +30,19 @@ dialign2-2: $(OBJS)
 # Subroutines
 #
 
+CXX = g++
+# CFLAGS =  -c -O3 -I$ -DCONS -fopenmp
+CXXFLAGS =  -g -c -I$ -DCONS -DDEBUG -O3 #-fopenmp
+CXX_LIBS = -lm
+
+CXX_OBJS = dialign-mmap.o
+
+dialign-mmap: $(CXX_OBJS)  
+	$(CXX) $(CXX_OBJS) $(CXX_LIBS) -o dialign-mmap
+
+dialign-mmap.o: dialign-mmap.cpp
+	$(CXX) $(CXXFLAGS) dialign-mmap.cpp
+
 dialign.o: dialign.c
 	$(CC) $(CFLAGS) dialign.c
 functions.o: functions.c 

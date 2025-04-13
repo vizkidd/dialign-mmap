@@ -1908,12 +1908,12 @@ void frag_sort_mmap(int number, int olw, mmapped_file *mapped_fasta, mmapped_fil
       i_offset = element_i->line_offset;
       // j_offset = element_j->line_offset;
       // change_struct_el_mmap(mapped_anc, element_i, element_j);
-      printf(" array[%d]: element_i->s[0]:%d element_i->s[1]:%d\n", i, element_i->s[0] + 1, element_i->s[1] + 1); // DEBUG
+      printf(" file:%s array[%d]: element_i->s[0]:%d element_i->s[1]:%d element_i->wgt:%f\n", mapped_anc->file_name, i, element_i->s[0] + 1, element_i->s[1] + 1, element_i->weight); // DEBUG
       fprintf(sorted_file, "%d\t%d\t%d\t%d\t%d\t%f\n", element_i->s[0] + 1, element_i->s[1] + 1, element_i->b[0], element_i->b[1], element_i->ext, element_i->weight);
     }
   }
   fclose(sorted_file);
-
+  // exit(0);
   // strcpy(filename, name_sorted);
 
   // if(olw){
@@ -1970,7 +1970,7 @@ void frag_sort_mmap(int number, int olw, mmapped_file *mapped_fasta, mmapped_fil
     for (size_t i = 0; i < total_anc_num; i++)
     {
       struct multi_frag *test_line = get_anchor_by_num(mapped_fasta, mapped_anc, &i, i_offset, 0);
-      printf(" test_line:%p\n", test_line);                                                                                                                        // DEBUG
+      // printf(" test_line:%p\n", test_line);                                                                                                                        // DEBUG
       printf(" array[%d]:%d s1:%d s2:%d weight:%f anc_num:%d test_ow:%g\n", i, array[i], test_line->s[0], test_line->s[1], test_line->anc_num, test_line->weight); // DEBUG
     }
   }
@@ -2479,9 +2479,10 @@ void filter(int *number, int anchor_step, mmapped_file *mmapped_anc, mmapped_fil
 
   if (anchor_step == 1)
   {
-    int zero_idx = 0;
+    int zero_idx = 1;
     dia = get_anchor_by_num(mmapped_fasta, mmapped_anc, &zero_idx, 0, 0);
-    // printf("dia->anc_num:%d\n", dia->anc_num); // DEBUG
+    printf("dia->anc_num:%d\n", dia->anc_num);                                                   // DEBUG
+    printf("dia->line_num:%d dia->s[0]:%d dia->s[1]:%d\n", dia->line_num, dia->s[0], dia->s[1]); // DEBUG
   }
   else
   {
@@ -2574,8 +2575,8 @@ void filter(int *number, int anchor_step, mmapped_file *mmapped_anc, mmapped_fil
             //             {
             // printf("as[i]:%d as[j]:%d ab_hv:%d\n", as[i], as[j], ab_hv); // DEBUG
             openpos_value set_pos_val = set_openpos_mmapped(mmapped_op, &as[i], &as[j], &ab_hv, &val_zero, input_offset);
-            // #pragma omp atomic write
-            // diag_value set_pos_val = set_diags_mmapped(all_diags, &as[i], &as[j], &ab_hv, &istep, &op_idx, &val_zero, input_offset);
+        // #pragma omp atomic write
+        // diag_value set_pos_val = set_diags_mmapped(all_diags, &as[i], &as[j], &ab_hv, &istep, &op_idx, &val_zero, input_offset);
 #pragma omp atomic write
             input_offset = set_pos_val.line_offset;
             // }
@@ -2597,6 +2598,7 @@ void filter(int *number, int anchor_step, mmapped_file *mmapped_anc, mmapped_fil
       }
       double added_weights = get_ow_mmapped(mmapped_ow, &(dia->s[0]), &(dia->s[1]), &val_zero, dia->line_offset).value + dia->weight;
       // set_diags_mmapped(all_diags, &(dia->s[0]), &(dia->s[1]), &(dia->hv), &istep, &added_weights_idx, &added_weights, dia->line_offset);
+      printf("DEBUG dia->s[0]:%d dia->s[1]:%d added_weights:%g\n", dia->s[0], dia->s[1], added_weights); // DEBUG
       set_ow_mmapped(mmapped_ow, &(dia->s[0]), &(dia->s[1]), &val_zero, &added_weights, dia->ow_offset);
       // glob_sim[as[0]][as[1]] =
       //     glob_sim[as[0]][as[1]] + dia->weight;
@@ -2908,10 +2910,10 @@ void av_tree_print_mmap(mmapped_file *mapped_fasta, mmapped_file *mapped_ow)
 
   FILE *t_file;
 
-  // if ((all_clades = (struct subtree *)
-  //          calloc(seqnum, sizeof(struct subtree))) == NULL)
   if ((all_clades = (struct subtree *)
-           malloc(seqnum * sizeof(struct subtree))) == NULL)
+           calloc(seqnum, sizeof(struct subtree))) == NULL)
+  // if ((all_clades = (struct subtree *)
+  //  malloc(seqnum * sizeof(struct subtree))) == NULL)
   {
     printf(" problems with memory allocation for `all_clades'\n \n");
     exit(1);
@@ -2925,16 +2927,16 @@ void av_tree_print_mmap(mmapped_file *mapped_fasta, mmapped_file *mapped_ow)
 
   // #pragma omp parallel for num_threads(omp_get_max_threads())
   for (i = 0; i < seqnum; i++)
-    // if ((clade_similarity[i] = (double *)
-    //          calloc(seqnum, sizeof(double))) == NULL)
     if ((clade_similarity[i] = (double *)
-             malloc(seqnum * sizeof(double))) == NULL)
+             calloc(seqnum, sizeof(double))) == NULL)
+      // if ((clade_similarity[i] = (double *)
+      //  malloc(seqnum * sizeof(double))) == NULL)
       exit(1);
 
-  // if ((string = (char *)
-  //          calloc(seqnum * 100, sizeof(char))) == NULL)
   if ((string = (char *)
-           malloc(seqnum * 100 * sizeof(char))) == NULL)
+           calloc(seqnum * 100, sizeof(char))) == NULL)
+  // if ((string = (char *)
+  //  malloc(seqnum * 100 * sizeof(char))) == NULL)
   {
     printf(" problems with memory allocation for `string'\n \n");
     exit(1);
@@ -2945,23 +2947,6 @@ void av_tree_print_mmap(mmapped_file *mapped_fasta, mmapped_file *mapped_ow)
   // #pragma omp parallel for num_threads(omp_get_max_threads())
   for (i = 0; i < seqnum; i++)
   {
-    // if ((all_clades[i].member = (int *)
-    //          calloc(seqnum, sizeof(int))) == NULL)
-    if ((all_clades[i].member = (int *)
-             malloc(seqnum * sizeof(int))) == NULL)
-    {
-      printf(" problems with memory allocation for `all_clades'\n \n");
-      exit(1);
-    }
-
-    // if ((all_clades[i].name = (char *)
-    //          calloc(seqnum * 100, sizeof(char))) == NULL)
-    if ((all_clades[i].name = (char *)
-             malloc(seqnum * 100 * sizeof(char))) == NULL)
-    {
-      printf(" problems with memory allocation for `all_clades'\n \n");
-      exit(1);
-    }
 
     fasta_value *seq_name_val = get_seqname_mmapped_fasta(mapped_fasta, &i, input_offset);
     // seq_name_val->data++;
@@ -2971,6 +2956,24 @@ void av_tree_print_mmap(mmapped_file *mapped_fasta, mmapped_file *mapped_ow)
     input_offset = seq_name_val->line_offset;
 
     // printf("seq_name_i[%d]: %s\n", i, seq_name_i); // DEBUG
+
+    if ((all_clades[i].member = (int *)
+             calloc(seqnum + 1, sizeof(int))) == NULL)
+    // if ((all_clades[i].member = (int *)
+    //          malloc(seqnum * sizeof(int))) == NULL)
+    {
+      printf(" problems with memory allocation for `all_clades'\n \n");
+      exit(1);
+    }
+
+    if ((all_clades[i].name = (char *)
+             calloc(strlen(seq_name_val->data) + 2, sizeof(char))) == NULL)
+    // if ((all_clades[i].name = (char *)
+    //  malloc(seqnum * 100 * sizeof(char))) == NULL)
+    {
+      printf(" problems with memory allocation for `all_clades'\n \n");
+      exit(1);
+    }
 
     // strcpy(all_clades[i].name, seq_name[i]);
     strcpy(all_clades[i].name, seq_name_i);
@@ -2995,8 +2998,10 @@ void av_tree_print_mmap(mmapped_file *mapped_fasta, mmapped_file *mapped_ow)
     {
       // clade_similarity[i][j] = glob_sim[i][j];
       // clade_similarity[j][i] = glob_sim[i][j];
-      ow_value added_weights_ij = get_ow_mmapped(mapped_ow, &i, &j, &added_weights_idx, input_offset_i);
-      ow_value added_weights_ji = get_ow_mmapped(mapped_ow, &j, &i, &added_weights_idx, input_offset_j);
+      // ow_value added_weights_ij = get_ow_mmapped(mapped_ow, &i, &j, &added_weights_idx, input_offset_i);
+      // ow_value added_weights_ji = get_ow_mmapped(mapped_ow, &j, &i, &added_weights_idx, input_offset_j);
+      ow_value added_weights_ij = get_ow_mmapped(mapped_ow, &i, &j, &zero_idx, input_offset_i);
+      ow_value added_weights_ji = get_ow_mmapped(mapped_ow, &j, &i, &zero_idx, input_offset_j);
       clade_similarity[i][j] = added_weights_ij.value;
       clade_similarity[j][i] = added_weights_ji.value;
       input_offset_i = added_weights_ij.line_offset;
@@ -3079,9 +3084,9 @@ void av_tree_print_mmap(mmapped_file *mapped_fasta, mmapped_file *mapped_ow)
   strcat(string, ";");
 
   i = strlen(string) + 2;
-
-  // if ((upg_str = (char *)calloc(i, sizeof(char))) == NULL)
-  if ((upg_str = (char *)malloc(i * sizeof(char))) == NULL)
+  printf("i:%d\n", i); // DEBUG
+  if ((upg_str = (char *)calloc(i, sizeof(char))) == NULL)
+  // if ((upg_str = (char *)malloc(i * sizeof(char))) == NULL)
   {
     printf(" problems with memory allocation for `upg_str'\n \n");
     exit(1);
@@ -3092,6 +3097,13 @@ void av_tree_print_mmap(mmapped_file *mapped_fasta, mmapped_file *mapped_ow)
 #pragma omp parallel for num_threads(omp_get_max_threads())
   for (i = 0; i <= strlen(string); i++)
     upg_str[i] = string[i];
+
+  // free(all_clades->name);
+  // free(all_clades->member);
+  // free(all_clades);
+
+  // free(string);
+  // free(clade_similarity);
 
 } /*  av_tree_print  */
 
