@@ -1,0 +1,90 @@
+ 
+                           DIALIGN 2.2.1 
+                           *************
+ 
+          Program code written by Burkhard Morgenstern and Said Abdeddaim 
+             e-mail contact: dialign (at) gobics (dot) de 
+ 
+          Published research assisted by DIALIGN 2 should cite:  
+ 
+             Burkhard Morgenstern (1999).
+             DIALIGN 2: improvement of the segment-to-segment
+             approach to multiple sequence alignment.
+             Bioinformatics 15, 211 - 218. 
+
+          For more information, please visit the DIALIGN home page at 
+
+             http://bibiserv.techfak.uni-bielefeld.de/dialign/ 
+ 
+         ************************************************************
+ 
+
+
+
+ 
+   Aligned sequences:          length:
+   ==================          =======
+ 
+   1) seq1                       139
+   2) seq2                       128
+   3) seq3                       150
+   4) seq4                       135
+   5) seq5                       148
+   6) seq6                       137
+
+   Average seq. length:          139.5 
+
+
+   Please note that only upper-case letters are considered to be aligned. 
+
+
+   Alignment (DIALIGN format):
+   ===========================
+ 
+seq1               1   nigacym--- --V------- ------RILR NPSF-HCGP- ---V-LCITK 
+seq2               1   ---------- ---------- -------HIM DEPS-DNAPG LncL-ITVNN 
+seq3               1   cl-------- -----PGfpy rnnarfRAIL EPSFdDCAP- ---V-HCIyt 
+seq4               1   ltd-----MC EGcqaPGq-- --------IM EPQW--CYP- ---LNITVNK 
+seq5               1   ikKWAKPWML EGT------- ------NLNE NSPF-DDAP- ---VDLCIER 
+seq6               1   t-RWGSTGLN KDR------- ------TYIL DPTF-TKAPK Lipvg----- 
+                                                                 
+                       0000000000 0000000000 0000000000 0000000000 0001011100 
+ 
+seq1              27   GHQHRQKHK- ------LNDM MP-TIGISKD HLALLLTHQQ YLRGKLKyk- 
+seq2              22   GEWHAKESG- ------LLNY MP-TIMSKDV LAWL---HQQ YLQAD-GILK 
+seq3              33   vtkie---KC fiKHGLYNSY MP-IGISADV LAQLWLTKQK YLQRILK--- 
+seq4              30   YGVFKHHAyg f---GNLCDY MS-I--ISKD FATWLTHHQQ HLQRDIA--- 
+seq5              33   NKQEKHEAKp --KHGLLNDY MTcIGISKDT LQALWLTHQQ KMLKqrGILK 
+seq6              31   NKGEKHAGKC ---HVLLGDY MP-TDIGKKD VLALNLLHTQ YLIRGGR--- 
+                                                                 
+                       1111111110 0002224445 5405555555 5566666788 6633222000 
+ 
+seq1              68   -----CGKTV SMagkpQHRy G----VNQWC ---VVMENTK YDVELGSLRY 
+seq2              60   l--CDCRKTI FM----WHD- Qremk--LWM ---FHMECIK WYILMGKRAN 
+seq3              76   --CDSKTWSI FM----QHR- G----GNQWM ----HMECIK HCIEMKLRAH 
+seq4              71   --KCDTRKTV SM----QHD- Q----HRKWy akmVMFECYK WYIVMWLRAC 
+seq5              81   sdCRTKTVQF VA----QHR- A----GNMWM ----DEECVY HHIAMGKLRA 
+seq6              74   --CDwvctvc cM----FHR- QwfqkGNQWM wg--YMESIK KYAEa--QRA 
+                                                                 
+                       0045444555 5500004440 5000045554 0000458888 8888866664 
+ 
+seq1             106   CNQDLMAMLM FVGFLMHGLE KP--YIMtry YRPFKy---- -- 
+seq2              98   C----LAMEM FVVRLYHRLG FK--Yygqmw wlsmdim--- -- 
+seq3             111   NDYLMAPMLF FLWYDLYvhr nvalYGMHEm lyvcdsgtcg -- 
+seq4             110   NLLLMAMM-- EQYD------ -------HE- YRAFKIYPgr mv 
+seq5             118   CNEDMAPIPF DQYDLYHRFR KP--YGMgpv fgy------- -- 
+seq6             113   NDLMMLMA-- QLWY------ -------HW- SKYPMLVPkv r- 
+                                                         
+                       3222233322 2222222111 1100111000 0000000000 00 
+ 
+
+ 
+ 
+   Sequence tree:
+   ==============
+
+Tree constructed using UPGMAbased on DIALIGN fragment weight scores
+ 
+((seq1        :0.082570((seq3        :0.029700seq5        :0.029700):0.045662seq6        :0.075362):0.007208):0.050335(seq2        :0.041575seq4        :0.041575):0.091329);
+ 
+ 

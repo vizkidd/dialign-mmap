@@ -5,44 +5,41 @@
 /**             Developed by Said Abdeddaim                **/
 /**          Said.Abdeddaim@dir.univ-rouen.fr              **/
 /************************************************************/
-/************************************************************/
+/************************************************************/                         
 
 #ifndef _ALIG_GRAPH_CLOSURE_H
 #define _ALIG_GRAPH_CLOSURE_H
 
-#include "dialign.h"
 
-typedef struct
-{
+typedef struct {
 	int *pos;
 	int nbr;
-} positionSet;
+	} positionSet;
 
-typedef struct
-{
-	int longueur;
+typedef struct {
+		int longueur;
 
-	int *aligSetNbr, *predAligSetPos, *succAligSetPos;
-} sequence;
+		int *aligSetNbr, *predAligSetPos, *succAligSetPos;
+	      } sequence;
 
-typedef struct
-{
-	int seqNbr;
-	sequence *seq;
-	int maxLong;
+typedef struct {
+		int seqNbr;
+		sequence *seq;
+		int maxLong;
 
-	positionSet *aligSet;
-	int nbrAligSets, oldNbrAligSets;
+		positionSet *aligSet;
+		int nbrAligSets, oldNbrAligSets;
 
-	int **predFrontier, **succFrontier;
+		int **predFrontier, **succFrontier;
 
-	int *topolog;
-	int *gauche1, *gauche2, *droite1, *droite2, **pos_;
+		int *topolog;
+		int *gauche1, *gauche2, *droite1, *droite2, **pos_;
 
-} CLOSURE;
+		} CLOSURE;
+		
 
-CLOSURE *newAligGraphClosure(int nbreseq,
-							 int nbreancr, int **ancrages, mmapped_file *mmapped_fasta);
+CLOSURE *newAligGraphClosure(int nbreseq, int *longseq, 
+				int nbreancr, int **ancrages);
 
 void freeAligGraphClosure(CLOSURE *clos);
 
@@ -61,5 +58,6 @@ int alignedSegments(CLOSURE *clos, int x, int i, int y, int j, int l);
 int predFrontier(CLOSURE *clos, int x, int i, int y);
 
 int succFrontier(CLOSURE *clos, int x, int i, int y);
+
 
 #endif /* _ALIG_GRAPH_CLOSURE_H */

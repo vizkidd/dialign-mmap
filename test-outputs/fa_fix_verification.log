@@ -1,0 +1,30 @@
+=== -fa input-filename-collision fix (KNOWN_ISSUES.md #1) ===
+
+Matrix (248 real cases, plain original vs fixed port):
+  ALL 248 CASES IDENTICAL
+  (3 of these -- dna8 ...-fa, prot15 -fa, prot6 -fa -- are the fixed
+   collision cases, explicitly labeled by tests/compare.sh as
+   ORIG-CLOBBERS-INPUT(fixed);NEW-PRESERVES-INPUT rather than a byte-diff;
+   another 3 are the pre-existing, already-fixed -ma/-lgsx ORIG-CRASHES
+   cases from CHANGES.md 5b)
+
+Manual verification of the exact destructive case (-anc -n -fa on a
+".fa"-named input), before vs after the fix:
+  before: input truncated to the gapped alignment output (silent data loss)
+  after:  input untouched (byte-identical, 0 gap chars, original size);
+          alignment correctly written to <input>.dialign-aligned.fa;
+          one-line note on stderr; exit code 0
+
+Sanitizer build (ASan+UBSan) on the same case: no heap errors, no new
+findings from the fix (only the pre-existing, unrelated one-time 1000-byte
+leak in main() already noted in this session's earlier work).
+
+Robustness: full 248/248 real cases identical across all 7 build/run
+variants (default | -nommap+MALLOC_PERTURB_=165 | DIALIGN_MMDEBUG=1
+poisoned frees | -ftrivial-auto-var-init=zero | =pattern | -O0 |
+-threads 3). The -fa collision case itself was additionally spot-checked
+across all 7 variants directly: input preserved, alt file produced,
+rc=0 in every variant.
+
+Fuzz (60 runs, seed 1) after the fix: same already-diagnosed -ma mismatch
+pattern only (original crashes, port completes) -- no new mismatches.

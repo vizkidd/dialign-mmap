@@ -1,0 +1,25 @@
+=== tests/run_matrix.sh (248 real cases in tests/cases.txt) ===
+vs. a clean rebuild of the unmodified original dialign-2_2_1 source:
+ALL 248 CASES IDENTICAL
+(3 of these cases -- dna20 -n -lgsx / -nt -ma / -nt -cs -ma -- segfault
+ (rc=139) on the plain original and complete cleanly on the port; every
+ other case byte-identical between original and port output files)
+
+=== tests/robustness.sh-equivalent, 7 build/run variants ===
+variants: default | -nommap + MALLOC_PERTURB_=165 | DIALIGN_MMDEBUG=1
+          poisoned frees | -ftrivial-auto-var-init=zero | =pattern | -O0
+          | -threads 3
+Run in chunks (sandbox 300s/call limit): 29 + 44 + 50 + 53 + 35 + 20 + 3
+  + 5 + 4 + 1 + 1 + 1 + 1 + 1 = 248 of 248 real cases
+ALL 248 CASES: identical output across all 7 variants, zero UNSTABLE flags
+
+=== tests/fuzz.py, differential fuzzing ===
+see fuzz_seed1_seed2.log -- 200 runs total (2 seeds), 8 mismatches, all of
+which are the plain original crashing on -ma/-lgsx while the port completes
+correctly (the already-diagnosed and fixed diap[]/prec_vec[] overflow --
+see CHANGES.md section 5b). No unexplained mismatches.
+
+=== new: scaling test (full pairwise anchoring, anti-codon anchors) ===
+see scaling/scaling_results.log and PERFORMANCE.md for the real N=50..400
+cost curve (wall time ~ N^2.07, peak RSS ~ N^1.57) and the N=700/1000
+corroboration attempts (incomplete -- see PERFORMANCE.md for why).

@@ -1,0 +1,100 @@
+ 
+                           DIALIGN 2.2.1 
+                           *************
+ 
+          Program code written by Burkhard Morgenstern and Said Abdeddaim 
+             e-mail contact: dialign (at) gobics (dot) de 
+ 
+          Published research assisted by DIALIGN 2 should cite:  
+ 
+             Burkhard Morgenstern (1999).
+             DIALIGN 2: improvement of the segment-to-segment
+             approach to multiple sequence alignment.
+             Bioinformatics 15, 211 - 218. 
+
+          For more information, please visit the DIALIGN home page at 
+
+             http://bibiserv.techfak.uni-bielefeld.de/dialign/ 
+ 
+         ************************************************************
+ 
+
+
+
+ 
+   Aligned sequences:          length:
+   ==================          =======
+ 
+   1) seq1                       166
+   2) seq2                       167
+   3) seq3                       155
+   4) seq4                       173
+   5) seq5                       165
+   6) seq6                       161
+   7) seq7                       162
+   8) seq8                       173
+
+   Average seq. length:          165.2 
+
+
+   Please note that only upper-case letters are considered to be aligned. 
+
+
+   Alignment (DIALIGN format):
+   ===========================
+ 
+seq1               1   accccggag- ---CCAGATG TTCCTATTAT GC--A--GAT -AATCTACTT 
+seq2               1   atcgatCTG- ----CCGATT TTCATATTTT GC--A--GAA -AAACTACTT 
+seq3               1   tta-----G- ----CAGA-T TTCATATCAT GC--AcgGAG -AAGCTACTT 
+seq4               1   gcgtggtga- -----AGATT TTCATATTAT TC--A--GAA GATTCGAGTT 
+seq5               1   ctg-----G- ----CAGATT ATCATATTAT Gagcat---- --TTCTT-TT 
+seq6               1   accgccactc cttCCAGATT TTCATATTAT TC--A--GAA -AATCTACTT 
+seq7               1   --------A- ----CTGATA TTCATATTca tgctA--GAA GATTACT-CT 
+seq8               1   cccta-CTA- ----CAGATT TTCATGTCAC CC--G--AGA -ACTCTACTT 
+                                                                 
+                       0000000000 0000124444 4444444444 3300300333 0222222233 
+ 
+seq1              42   TCGCTtcAT- -ATGAAGTC- GGTTACCTTC --GGCTACTA TATA-CTC-- 
+seq2              41   GCGCTCtgat aA-CGAGTCg GGTTATCTTC --GAATACTG TATG-GTC-- 
+seq3              37   TGCCTCg--- --TTACGGC- GGTTATCTTC --GCATTCTG AATAAGTC-- 
+seq4              41   CGCAGG-AT- -A-CGAGTA- TGTTATCTTC --GGACCTTA AAGT-CAC-- 
+seq5              34   TGCCTG-AT- -A-CGAGTC- GGTTATgctg caGGTTACT- --GTAagtcg 
+seq6              46   CGCGTA-AT- -A-CGAGTC- GGTTACACTC --GGACACGG --ATAGTC-- 
+seq7              35   CGGCTG-AT- -ACGAAGTC- GGTTACA-TC --GGATACT- --ATAGTA-- 
+seq8              40   CGCCTG-AT- -ATCGAGTC- GGTTATCTTC --GGATTCTG TtATAGTC-- 
+                                                                 
+                       2222210110 0102222230 3444432222 0022211111 0010011100 
+ 
+seq1              84   CCACACTGGG Aaaact---- TGTTTGAGTA CCCAGaAAAA TAGCGCCGGA 
+seq2              85   CAACCTGGGt tt--CTATGC TTCTGGCGTA CCCAG-AAAA TAAAGACGGA 
+seq3              77   CCACTCGGGG ATCGCTATAC TTGTGAGACC cagg----AA AGAGGGCGGA 
+seq4              81   CACCCTGGTG ATCCCTATGC TTGTGATGTA CCCTG-AAAA TAGCGACGGA 
+seq5              76   CCCCTCGTAG ATCCCTATGC TCTGTGAGGG CACAG-AAAT TAGGGACGGA 
+seq6              85   CCACCTGGTG ATCCTA-TGt g--TTGAGTt accgc---AA TAGCGACGGA 
+seq7              73   CACGCTTTTG ATCCTA-TGC TTG-GGAGTA GCCAG-AAAA TAGCGACGGA 
+seq8              82   CCACGTGGAG ATGCTACTGC TTGTGAGTAC aCCAG-ACAA ATAGCGCGGA 
+                                                                 
+                       1111111111 1111111111 1111111111 1122304466 6666779999 
+ 
+seq1             130   CCCCGGTGTT AAGTGTCGAG -CCACATAAC TTCagccg-- ------ 
+seq2             132   CCGCTGTGTT ATGTGTCGAG TCTACATCAC ATtcag---- ------ 
+seq3             123   CCGCCGTGTG AAGTGGCGAG -CACAA-CAC GACGg----- ------ 
+seq4             130   CCGCTGTGT- AAGTGTCGAG -CTACATCAC GCCGtcttta acccca 
+seq5             125   CCGCGGTGTT AAGTACTGGG -CAAGATCAG TACcctttac gg---- 
+seq6             129   ACGCGGTAGT TGGTGTCGAG -CTACA-CGC GTCac----- ------ 
+seq7             120   CCGCGGTGTT AAGCGTCGAA GCTACATGAC TGCtcatccc aca--- 
+seq8             131   CGGCGGTGCT AAGTGTACGG -ATAAC-AGC acttcgtaac acccc- 
+                                                             
+                       9999988776 6676554442 0211110111 0000000000 000000 
+ 
+
+ 
+ 
+   Sequence tree:
+   ==============
+
+Tree constructed using UPGMAbased on DIALIGN fragment weight scores
+ 
+(((((seq1        :0.025846seq2        :0.025846):0.001815(seq4        :0.019545seq6        :0.019545):0.008116):0.005818seq7        :0.033479):0.005236seq5        :0.038715):0.011175(seq3        :0.030782seq8        :0.030782):0.019108);
+ 
+ 

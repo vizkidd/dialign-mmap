@@ -1,0 +1,65 @@
+name: Build and deploy WASM demo to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'wasm/**'
+      - 'dialign2_dir/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+
+      # build.sh itself runs wasm/check_wasm.py (does the module actually
+      # have main() linked in?) and wasm/smoke_test.js (does it produce the
+      # same alignment as the native build, under Node?) and fails the
+      # build if either doesn't pass -- see the comment at the top of
+      # build.sh for the build that shipped without this and why it matters.
+      - name: Build and verify WASM module
+        run: |
+          chmod +x wasm/build.sh
+          ./wasm/build.sh
+
+      - name: Sanity-check the build output exists
+        run: |
+          test -s wasm/dist/dialign2-2.wasm
+          test -s wasm/dist/dialign2-2.js
+          test -s wasm/dist/index.html
+          ls -la wasm/dist
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: wasm/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

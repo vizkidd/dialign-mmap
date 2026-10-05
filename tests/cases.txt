@@ -1,0 +1,249 @@
+# dataset<TAB>options   (compared byte-for-byte with the original)
+test1	
+test2	
+trna_50	
+trna_50	-n
+trna_50	-anc -n
+trna_50	-anc
+prot6	
+prot15	
+prot40	
+prot6	-ow
+prot15	-iw
+prot15	-o
+prot15	-ref_seq
+prot6	-mat -mat_thr 1
+prot6	-it
+prot6	-istep 1
+prot6	-stars 3
+prot6	-csc
+prot6	-xfr
+prot6	-stdo
+prot6	-fn outx -fa
+prot6	-mot [AG] 1.0 5
+single	-sc
+dna8	-n
+dna8	-nt
+dna8	-ma
+dna8	-n -ff -fop -afc -lo -fsm -msf -cw -fa
+dna8	-nt -cs -ff -afc_v
+dna8	-n -thr 2 -lmax 20 -smin 6 -ds
+dna8	-nt -wtp -pand -pamnd
+dna8	-n -pao
+dna8	-n -bs
+dna20	-n -lo -ff
+dna20	-n -max_link
+dna20	-n -min_link -mask
+dna20	-n -it -lo
+dna36	-n
+dna36	-n -ow
+dna2	-n
+dna_orf5	-nt -cs
+dna_orf5	-lgs
+dna_nowrap	-n
+ties30	-n
+ties30	-n -max_link
+ties30	-n -min_link
+ties30	-n -ow
+messy	-n
+messy	-n -lo
+long3	-n
+dna20	-n -fsmv
+dna20	-n -lo -fsm -ow
+prot15	-lo -fsm
+trna_50	-n -lo -fsm
+ties30	-n -lo -fsm
+prot15	-afc
+prot15	-afc_v
+prot15	-cw
+prot15	-d1w
+prot15	-fa
+prot15	-ff
+prot15	-fop
+prot15	-fsm
+prot15	-fsmv
+prot15	-ow
+prot15	-lo
+prot15	-ma
+prot15	-mask
+prot15	-mat
+prot15	-mat_thr 2
+prot15	-max_link
+prot15	-min_link
+prot15	-msf
+prot15	-nta
+prot15	-ta
+prot15	-pst
+prot15	-stars 5
+prot15	-stdo
+prot15	-thr 3
+prot15	-lmax 15
+prot15	-smin 3
+prot15	-istep 2
+prot15	-it
+prot15	-red
+prot15	-strict
+prot15	-nas
+prot15	-online
+prot15	-wgtpr
+prot15	-csc
+prot15	-cd_gobics
+prot15	-lgs
+prot15	-lgs_t
+prot15	-lgsx
+prot15	-fn myout
+prot15	-fn myout -fa -msf -cw
+prot15	-pao
+prot15	-pand
+prot15	-pamnd
+prot15	-wtp
+prot15	-b1
+prot15	-b2
+prot15	-wgtprx
+prot6	-afc
+prot6	-afc_v
+prot6	-cw
+prot6	-d1w
+prot6	-fa
+prot6	-ff
+prot6	-fop
+prot6	-fsm
+prot6	-fsmv
+prot6	-iw
+prot6	-lo
+prot6	-ma
+prot6	-mask
+prot6	-mat
+prot6	-mat_thr 2
+prot6	-max_link
+prot6	-min_link
+prot6	-msf
+prot6	-nta
+prot6	-ta
+prot6	-o
+prot6	-pst
+prot6	-stars 5
+prot6	-thr 3
+prot6	-lmax 15
+prot6	-smin 3
+prot6	-istep 2
+prot6	-red
+prot6	-strict
+prot6	-nas
+prot6	-online
+prot6	-wgtpr
+prot6	-cd_gobics
+prot6	-lgs
+prot6	-lgs_t
+prot6	-lgsx
+prot6	-fn myout
+prot6	-fn myout -fa -msf -cw
+prot6	-pao
+prot6	-pand
+prot6	-pamnd
+prot6	-wtp
+prot6	-b1
+prot6	-b2
+prot6	-wgtprx
+dna20	-n
+dna20	-nt
+dna20	-nt -cs
+dna20	-n -ds
+dna20	-nt -ds
+dna20	-n -lgs
+dna20	-nt -lgs
+dna20	-n -lgs_t
+dna20	-n -lgsx
+dna20	-nt -ma
+dna20	-nt -cs -ma
+dna20	-n -o
+dna20	-nt -o
+dna20	-n -thr 1
+dna20	-n -lmax 25
+dna20	-n -smin 5
+dna20	-n -stars 2
+dna20	-n -nta
+dna20	-n -stdo
+dna20	-nt -afc_v -cs
+dna20	-nt -lo -cs -ff -fop -fsmv
+dna20	-n -mask -lo
+dna20	-n -nas
+dna20	-n -pst -ff
+dna20	-n -cd_gobics
+dna20	-n -it -istep 3
+dna20	-n -wgtpr
+dna20	-n -online
+dna20	-nt -wtp -pamnd
+dna20	-nt -pao -pand
+dna20	-nt -it -thr 0 -lmax 30 -smin 8 -ds -ff -fop -pst
+dna_orf5	-n
+dna_orf5	-nt
+dna_orf5	-n -ds
+dna_orf5	-nt -ds
+dna_orf5	-n -lgs
+dna_orf5	-nt -lgs
+dna_orf5	-n -lgs_t
+dna_orf5	-n -lgsx
+dna_orf5	-nt -ma
+dna_orf5	-nt -cs -ma
+dna_orf5	-n -o
+dna_orf5	-nt -o
+dna_orf5	-n -thr 1
+dna_orf5	-n -lmax 25
+dna_orf5	-n -smin 5
+dna_orf5	-n -stars 2
+dna_orf5	-n -nta
+dna_orf5	-n -stdo
+dna_orf5	-nt -afc_v -cs
+dna_orf5	-nt -lo -cs -ff -fop -fsmv
+dna_orf5	-n -mask -lo
+dna_orf5	-n -nas
+dna_orf5	-n -pst -ff
+dna_orf5	-n -cd_gobics
+dna_orf5	-n -it -istep 3
+dna_orf5	-n -wgtpr
+dna_orf5	-n -online
+dna_orf5	-nt -wtp -pamnd
+dna_orf5	-nt -pao -pand
+dna_orf5	-nt -it -thr 0 -lmax 30 -smin 8 -ds -ff -fop -pst
+dna8	-nt -cs
+dna8	-n -ds
+dna8	-nt -ds
+dna8	-n -lgs
+dna8	-nt -lgs
+dna8	-n -lgs_t
+dna8	-n -lgsx
+dna8	-nt -ma
+dna8	-nt -cs -ma
+dna8	-n -o
+dna8	-nt -o
+dna8	-n -thr 1
+dna8	-n -lmax 25
+dna8	-n -smin 5
+dna8	-n -stars 2
+dna8	-n -nta
+dna8	-n -stdo
+dna8	-nt -afc_v -cs
+dna8	-nt -lo -cs -ff -fop -fsmv
+dna8	-n -mask -lo
+dna8	-n -nas
+dna8	-n -pst -ff
+dna8	-n -cd_gobics
+dna8	-n -it -istep 3
+dna8	-n -wgtpr
+dna8	-n -online
+dna8	-nt -wtp -pamnd
+dna8	-nt -pao -pand
+dna8	-nt -it -thr 0 -lmax 30 -smin 8 -ds -ff -fop -pst
+trnaS_100	-anc -n
+trnaS_100	-anc -n -nas
+trnaS_100	-anc
+trnaL_40	-anc -n
+trnaL_40	-anc -n -nas
+trnaL_40	-n
+trnaL_40	-anc -n -ow
+trnaL_80	-anc -n
+trna_50	-n -ow
+prot40	-ow
+dna20	-nt -ow -lo
+dna8	-nt -ma -lo

@@ -1,0 +1,13 @@
+=== fuzz seed 1, 100 runs (real tests/fuzz.py) ===
+MISMATCH it=0 opts=-ma -fsm -ff -fn res -cs -lo rc={'r': -11, 'r2': -11, 'n': 0, 'n2': 0}
+MISMATCH it=14 opts=-ma -lmax 30 -pst -it rc={'r': -11, 'r2': -11, 'n': 0, 'n2': 0}
+MISMATCH it=31 opts=-ma -nas rc={'r': -6, 'r2': -6, 'n': 0, 'n2': 0}
+MISMATCH it=39 opts=-ma rc={'r': -6, 'r2': -6, 'n': 0, 'n2': 0}
+MISMATCH it=67 opts=-n -pst -lgsx -istep 2 -lmax 40 -fn res rc={'r': -11, 'r2': -11, 'n': 0, 'n2': 0}
+MISMATCH it=80 opts=-ma -pst -pao -it -pand -ds rc={'r': -11, 'r2': -11, 'n': 0, 'n2': 0}
+fuzz: 100 runs, 6 mismatches (seed 1) -- every mismatch is original crashing (-ma/-lgsx), port completes
+
+=== fuzz seed 2, 100 runs ===
+MISMATCH it=5 opts=-ma -mask rc={'r': -11, 'r2': -11, 'n': 0, 'n2': 0}
+MISMATCH it=11 opts=-ma -fn res rc={'r': -11, 'r2': -11, 'n': 0, 'n2': 0}
+fuzz: 100 runs, 2 mismatches (seed 2) -- same pattern

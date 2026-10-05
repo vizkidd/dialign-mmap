@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dialign-mmap (WASM)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 780px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+  h1 { font-size: 1.4rem; }
+  fieldset { border: 1px solid #ccc; border-radius: 6px; margin: 1rem 0; padding: 0.75rem 1rem; }
+  legend { padding: 0 0.4rem; font-weight: 600; }
+  label { display: inline-flex; align-items: center; gap: 0.35rem; margin: 0.25rem 0.75rem 0.25rem 0; }
+  input[type=text] { width: 100%; box-sizing: border-box; padding: 0.4rem; }
+  button { padding: 0.6rem 1.2rem; font-size: 1rem; cursor: pointer; }
+  button:disabled { cursor: default; opacity: 0.6; }
+  pre { background: #f4f4f4; padding: 0.8rem; border-radius: 6px; overflow: auto; max-height: 420px; white-space: pre-wrap; }
+  .muted { color: #666; font-size: 0.9rem; }
+  .err { color: #b00020; }
+</style>
+</head>
+<body>
+<h1>dialign-mmap</h1>
+<p class="muted">
+  DIALIGN 2.2.1 (<a href="https://github.com/vizkidd/dialign-mmap">vizkidd/dialign-mmap</a>),
+  compiled to WebAssembly. Runs entirely in your browser -- nothing is uploaded anywhere.
+  Single-threaded WASM build (no OpenMP); output matches the native build
+  (see <a href="https://github.com/vizkidd/dialign-mmap/blob/main/CHANGES.md">CHANGES.md</a>).
+  <strong>One alignment per page load</strong> -- reload the page before running another
+  (a fresh module instance is loaded per run to avoid stale state between runs; this keeps
+  each run correct rather than keeping one instance around for speed).
+</p>
+
+<fieldset>
+  <legend>Input</legend>
+  <label>Sequences (FASTA) <input type="file" id="fasta" accept=".fa,.fasta,.seq,.txt"></label><br>
+  <label><input type="checkbox" id="useAnc"> Use anchor points (-anc)</label>
+  <span id="ancFileWrap" style="display:none">
+    <label>Anchor file (.anc) <input type="file" id="ancFile" accept=".anc,.txt"></label>
+  </span>
+</fieldset>
+
+<fieldset>
+  <legend>Sequence type</legend>
+  <label><input type="radio" name="seqtype" value=""   checked> protein (default)</label>
+  <label><input type="radio" name="seqtype" value="-n">  DNA/RNA (-n)</label>
+  <label><input type="radio" name="seqtype" value="-nt"> DNA/RNA, translated (-nt)</label>
+</fieldset>
+
+<fieldset>
+  <legend>Common options</legend>
+  <label><input type="checkbox" id="opt_cs">  -cs  (also compare complementary strand)</label>
+  <label><input type="checkbox" id="opt_lo">  -lo  (long output)</label>
+  <label><input type="checkbox" id="opt_ma">  -ma  (mixed / translated weights)</label>
+  <label><input type="checkbox" id="opt_nas"> -nas (no auto-scaling of weights)</label>
+  <br>
+  <label style="width:100%">Extra raw options (advanced, space-separated)
+    <input type="text" id="extraOpts" placeholder="-thr 0.5 -lmax 30"></label>
+  <p class="muted">
+    Threading/mmap flags are not applicable here (this build is single-threaded and
+    always runs with the equivalent of <code>-nommap</code> -- both verified
+    byte-identical to the native defaults by this project's test suite) --
+    <code>-threads</code>/<code>-nommap</code>/<code>-tmpdir</code> in the extra-options
+    field are accepted but have no effect.
+  </p>
+  <label><input type="checkbox" id="debugMode"> Debug mode</label>
+  <span class="muted">-- logs every step (args, file writes, the WASM module's own
+    exports, virtual-filesystem contents after the run) to this page, the browser console,
+    <em>and</em> the module's own stdout/stderr, so an error can be retraced without
+    re-running anything. Off by default to keep normal output uncluttered.</span>
+</fieldset>
+
+<button id="runBtn">Run alignment</button>
+<span id="status" class="muted"></span>
+
+<h3 style="margin-top:1.5rem">Result</h3>
+<div id="downloadWrap"></div>
+<pre id="output">(no run yet)</pre>
+
+<script>
+const $ = (id) => document.getElementById(id);
+$('useAnc').addEventListener('change', () => {
+  $('ancFileWrap').style.display = $('useAnc').checked ? 'inline' : 'none';
+});
+
+function readFileAsUint8(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(new Uint8Array(r.result));
+    r.onerror = () => reject(r.error);
+    r.readAsArrayBuffer(file);
+  });
+}
+
+$('runBtn').addEventListener('click', async () => {
+  const fastaFile = $('fasta').files[0];
+  if (!fastaFile) { alert('Choose a FASTA file first.'); return; }
+
+  const dbg = $('debugMode').checked;
+  let statusLog = '';
+  // Debug mode's whole point: every line goes to three places at once
+  // (stdout/stderr from the C program included via `kind`) so a run can be
+  // retraced from whichever of the three you happen to have open --
+  // "stdout" here means the module's own print/printErr callbacks below,
+  // which is how C's stdout/stderr actually surface in a browser at all.
+  function log(line, kind) {
+    statusLog += line + '\n';
+    $('output').textContent = statusLog;
+    if (dbg || kind === 'error') {
+      (kind === 'error' ? console.error : kind === 'stderr' ? console.warn : console.log)('[dialign-mmap] ' + line);
+    }
+  }
+
+  $('runBtn').disabled = true;
+  $('status').textContent = 'loading WASM module...';
+  $('output').textContent = '';
+  $('downloadWrap').innerHTML = '';
+
+  try {
+    const base = 'input';                 // -> input.fa, input.anc, input.ali
+    const fastaBytes = await readFileAsUint8(fastaFile);
+    if (dbg) log(`[debug] read ${fastaFile.name}: ${fastaBytes.length} bytes`);
+
+    let ancBytes = null;
+    if ($('useAnc').checked) {
+      const ancFile = $('ancFile').files[0];
+      if (!ancFile) throw new Error('Anchor points enabled but no .anc file chosen.');
+      ancBytes = await readFileAsUint8(ancFile);
+      if (dbg) log(`[debug] read ${ancFile.name}: ${ancBytes.length} bytes`);
+    }
+
+    const args = [];
+    const seqtype = document.querySelector('input[name=seqtype]:checked').value;
+    if (seqtype) args.push(seqtype);
+    if ($('opt_cs').checked)  args.push('-cs');
+    if ($('opt_lo').checked)  args.push('-lo');
+    if ($('opt_ma').checked)  args.push('-ma');
+    if ($('opt_nas').checked) args.push('-nas');
+    if (ancBytes) args.push('-anc');
+    const extra = $('extraOpts').value.trim();
+    if (extra) args.push(...extra.split(/\s+/).filter(Boolean));
+    args.push(`${base}.fa`);
+
+    $('status').textContent = 'running: dialign2-2 ' + args.join(' ');
+    log(`$ dialign2-2 ${args.join(' ')}`);
+
+    // Preflight: inspect the .wasm binary itself before instantiating it.
+    // This exists because of a real, previously-shipped failure mode: a
+    // build with no main() linked in loads fine, runs, prints nothing, and
+    // "succeeds" with no output -- which from the page's point of view is
+    // indistinguishable from every other silent failure. Checking this
+    // directly, always (not just in debug mode), turns that specific
+    // failure into an immediate, specific error instead of a mystery.
+    // wasm/check_wasm.py is the same check for the build/CI side.
+    try {
+      const wasmResp = await fetch('dialign2-2.wasm');
+      const wasmBytes = new Uint8Array(await wasmResp.arrayBuffer());
+      const info = inspectWasm(wasmBytes);
+      if (dbg) {
+        log(`[debug] dialign2-2.wasm: ${info.size} bytes, ${info.functions} functions defined, `
+          + `exports: ${info.exports.map(e => e.name).join(', ') || '(none)'}`);
+      }
+      if (!info.hasMain) {
+        throw new Error('This WASM build has no main() linked in (checked the module\'s own export '
+          + 'table) -- it will load and appear to run, but do nothing. This is a build problem '
+          + '(the C sources were not linked into this module), not a usage problem -- rebuild with '
+          + 'wasm/build.sh, which now fails the build itself if this happens, and see wasm/README.md.');
+      }
+    } catch (e) {
+      if (e instanceof TypeError) log(`[debug] could not preflight-check dialign2-2.wasm (${e.message}) -- continuing anyway`);
+      else throw e;
+    }
+
+    // Fresh module instance per run -- the C program keeps state in
+    // process-global variables set from argv, which is fine for a single
+    // main() invocation but is not guaranteed reset on a second run in the
+    // same instance; a new instance sidesteps that entirely rather than
+    // requiring an audit of every global for reentrancy.
+    //
+    // `main()` here runs automatically at startup (Emscripten's default),
+    // driven by the `arguments` given below, with input files written into
+    // the virtual filesystem from `preRun` -- which runs just before that,
+    // in time for main() to find them. We deliberately do NOT rely on
+    // Module.callMain(): it needs to be added to EXPORTED_RUNTIME_METHODS
+    // at build time to exist at all, so relying on it is one more thing
+    // that can silently not be there depending on build flags; `arguments`
+    // + `preRun` is the same mechanism Emscripten's own default startup
+    // path always uses, so there's nothing extra that has to be exported
+    // for it to work.
+    //
+    // preRun callbacks are plain JS functions -- they do NOT get a bare
+    // `FS`/`ENV` in scope just because Emscripten's internals happen to
+    // use those names; a closure only sees what's in scope where it was
+    // *written* (here, in this page's own script), not where it's later
+    // *called from* (inside the generated module). What IS reliable,
+    // documented behaviour for a MODULARIZE=1 build: the config object we
+    // pass to the factory function is used AS the Module object -- so
+    // Emscripten mutates `moduleConfig` in place, attaching `.FS` to that
+    // same object as it starts up, before running `preRun`. This preRun
+    // closure captures `moduleConfig` by reference (it's an ordinary
+    // variable in this same script), so by the time it actually runs,
+    // `moduleConfig.FS` already exists on it. DIALIGN2_DIR itself doesn't
+    // need this trick: the WASM build bakes in a compile-time default (see
+    // -DDIALIGN2_DIR_DEFAULT in wasm/build.sh), so the `ENV` key below is
+    // belt-and-suspenders, not load-bearing.
+    //
+    // On success this codebase's main() just falls off the end (an
+    // ordinary `return 0`), so the module promise resolves normally and
+    // Module.FS is usable afterward. On a hard error this codebase calls C
+    // `exit(1)` directly in many places (anchor.c's anchor_check(), for
+    // one -- e.g. an anchor file that doesn't match the FASTA file it's
+    // paired with). The `catch` below handles the case where that
+    // surfaces as a thrown `ExitStatus`, which is what Emscripten's docs
+    // describe and is worth keeping -- but observed in an actual build:
+    // with EXIT_RUNTIME=0 it does NOT throw here, the module promise
+    // resolves exactly as if main() had returned normally, and the only
+    // visible difference is that /input.ali was never written. That's why
+    // the "no output was produced" branch further down treats a missing
+    // output file as the primary, authoritative signal that something
+    // went wrong -- not an afterthought for when the ExitStatus catch
+    // somehow doesn't fire, but the actual common case for it.
+    const moduleConfig = {
+      print:    (t) => log(t, 'stdout'),
+      printErr: (t) => log(t, 'stderr'),
+      arguments: args,
+      ENV: { 'DIALIGN2_DIR': '/dialign2_dir' },
+      preRun: [function () {
+        if (dbg) log(`[debug] preRun: writing /${base}.fa (${fastaBytes.length} bytes)`
+          + (ancBytes ? ` and /${base}.anc (${ancBytes.length} bytes)` : ''));
+        moduleConfig.FS.writeFile(`/${base}.fa`, fastaBytes);
+        if (ancBytes) moduleConfig.FS.writeFile(`/${base}.anc`, ancBytes);
+      }],
+    };
+
+    function listFsRoot(FS) {
+      try {
+        return FS.readdir('/').filter((n) => n !== '.' && n !== '..')
+          .map((n) => { try { return `${n} (${FS.stat('/' + n).size}b)`; } catch (_) { return n; } })
+          .join(', ');
+      } catch (e) { return `(could not list: ${e.message})`; }
+    }
+
+    let Module;
+    try {
+      Module = await DialignModule(moduleConfig);
+    } catch (e) {
+      if (dbg && e && e.stack) log('[debug] ' + e.stack, 'error');
+      if (e && e.name === 'ExitStatus') {
+        log(`exited with code ${e.status}`, 'error');
+        $('output').innerHTML = '<pre style="all:unset">' + statusLog + '</pre>'
+          + '<span class="err">exited with code ' + e.status + ' -- see the log above for why.</span>';
+        $('status').textContent = `done (exit code ${e.status})`;
+        return;
+      }
+      throw e;
+    }
+
+    if (dbg) log('[debug] module exited normally, / now contains: ' + listFsRoot(Module.FS));
+
+    let aliText;
+    try {
+      aliText = new TextDecoder().decode(Module.FS.readFile(`/${base}.ali`));
+    } catch (_) {
+      aliText = null;
+    }
+
+    if (aliText) {
+      $('output').textContent = aliText;
+      const blob = new Blob([aliText], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${fastaFile.name.replace(/\.[^.]+$/, '')}.ali`;
+      a.textContent = 'Download .ali';
+      $('downloadWrap').appendChild(a);
+      $('status').textContent = 'done (exit code 0)';
+    } else {
+      log(`no /${base}.ali was produced`, 'error');
+      $('output').innerHTML = (statusLog ? '<pre style="all:unset">' + statusLog + '</pre>' : '')
+        + '<span class="err">No .ali output was produced. If the log above shows a message from '
+        + 'dialign2-2 itself (a WARNING, "PROGRAM TERMINATED", etc.) that\'s the actual reason -- a '
+        + 'common one is an anchor (.anc) file that doesn\'t match the FASTA file it\'s paired with '
+        + '(both files have to come from the same dataset). If the log above is empty'
+        + (dbg ? '' : ' (tip: tick "Debug mode" and re-run for a full trace)') + ', that points at '
+        + 'something lower-level -- worth reporting with Debug mode on.</span>';
+      $('status').textContent = 'done -- no output (see log)';
+    }
+  } catch (err) {
+    if (dbg && err && err.stack) console.error('[dialign-mmap]', err.stack);
+    $('output').innerHTML = (statusLog ? '<pre style="all:unset">' + statusLog + '</pre>' : '')
+      + '<span class="err">' + (err && err.message ? err.message : String(err)) + '</span>';
+    $('status').textContent = 'error';
+  } finally {
+    $('runBtn').disabled = false;
+  }
+});
+</script>
+<script src="wasm_inspect.js"></script>
+<script src="dialign2-2.js"></script>
+</body>
+</html>
